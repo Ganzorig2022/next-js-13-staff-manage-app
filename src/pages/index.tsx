@@ -1,11 +1,13 @@
 // 'use client';
 
 import Head from 'next/head';
-import Header from './components/Header';
+import Header from '../components/header/Header';
 import { useAuth } from '@/hooks/useAuth';
+import Sidebar from '@/components/Sidebar';
+import MainContent from '@/components/MainContent';
 
 export default function Home() {
-  const { logout, loading } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) return null;
 
@@ -17,10 +19,12 @@ export default function Home() {
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
       </Head>
-      <main className='bg-red-50'>
-        <Header />
-        <div>Hey this is home page</div>
-        <button onClick={logout}>Log out</button>
+      <main className='flex flex-row'>
+        <Sidebar />
+        <div className='flex flex-col w-full'>
+          <Header />
+          <MainContent />
+        </div>
       </main>
     </>
   );

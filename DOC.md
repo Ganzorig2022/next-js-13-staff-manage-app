@@ -18,13 +18,11 @@ Git repository үүсгэн хадгалах.
 
 > https://demos.themeselection.com/marketplace/materio-mui-react-nextjs-admin-template/demo-3/login/
 
-1. Installing NextJS with TypeScript and TailwindCSS
+## Installing NextJS with TypeScript and TailwindCSS
 
 > https://nextjs.org/docs/basic-features/typescript
 
 > https://tailwindcss.com/docs/guides/nextjs
-
-> https://alexsidorenko.com/blog/next-js-protected-routes/
 
 ### React Hook Form
 

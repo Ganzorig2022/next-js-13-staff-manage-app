@@ -3,7 +3,17 @@
 @tailwind utilities;
 
 @layer components {
+  body {
+    background-color: '#F4F5FA';
+  }
+}
+
+@layer components {
   .customInput {
     @apply w-full rounded px-5 py-1.5 placeholder-[gray] outline-none focus:bg-gray-100 border border-gray-400;
+  }
+
+  .editInput {
+    @apply bg-transparent rounded px-2 py-1 w-full focus:outline-none;
   }
 }
