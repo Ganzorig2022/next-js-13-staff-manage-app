@@ -1,5 +1,6 @@
 import { useAuth } from '@/hooks/useAuth';
 import { LoginView } from '@/recoil/loginAtom';
+import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useState } from 'react';
 import { useForm, SubmitHandler } from 'react-hook-form';
@@ -28,6 +29,12 @@ const SignUp = ({ toggleView }: Props) => {
   const onSubmit: SubmitHandler<FormData> = async (data) => {
     setLoading(true);
     await signUp(data.email, data.password);
+    // save to MONGODB
+    const response = await axios.post('/api/user', {
+      username: 'Ganzorig',
+      email: data.email,
+    });
+    console.log(response);
     setLoading(false);
   };
 
