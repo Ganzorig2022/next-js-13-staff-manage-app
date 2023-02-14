@@ -1,14 +1,4 @@
-// import { createYoga, createSchema } from 'graphql-yoga';
-// import { ApolloClient, InMemoryCache } from '@apollo/client';
-
-// const client = new ApolloClient({
-//   uri: '/api/user',
-//   cache: new InMemoryCache(),
-// });
-
-// export default client;
-
-import { ApolloServer, gql } from 'apollo-server-micro';
+import { ApolloClient, gql } from '@apollo/client';
 
 const typeDefs = gql`
   type Query {
@@ -30,7 +20,7 @@ export const config = {
 const apolloServer = new ApolloServer({ typeDefs, resolvers });
 export default apolloServer
   .start()
-  .then(() => apolloServer.createHandler({ path: 'api/graphql' }));
+  .then(() => apolloServer.createHandler({ path: '' }));
 
 // import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
 

@@ -7,12 +7,12 @@ import { client } from '../graphql/apollo-client';
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
-    <AuthProvider>
-      <ApolloProvider client={client}>
+    <ApolloProvider client={client}>
+      <AuthProvider>
         <RecoilRoot>
           <Component {...pageProps} />
         </RecoilRoot>
-      </ApolloProvider>
-    </AuthProvider>
+      </AuthProvider>
+    </ApolloProvider>
   );
 }
