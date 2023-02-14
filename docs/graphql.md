@@ -2,6 +2,12 @@
 
 > https://levelup.gitconnected.com/setting-up-graphql-api-with-mongodb-and-apollo-server-for-a-nextjs-app-cec7a9baedbf
 
+1. Start server
+
+```bash
+npm start
+```
+
 1. Installing
 
 ``bash

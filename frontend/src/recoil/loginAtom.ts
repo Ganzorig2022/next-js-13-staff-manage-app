@@ -9,7 +9,7 @@ const defaultState: LoginState = {
 };
 
 export const loginOpenState = atom<LoginState>({
-  key: 'loginState', // unique ID
+  key: 'loginStateId', // unique ID
   default: defaultState,
 });
 

@@ -1,33 +1,94 @@
 import { useAuth } from '@/hooks/useAuth';
 import Image from 'next/image';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useQuery, gql, useMutation, useApolloClient } from '@apollo/client';
+
+//1) Defining GraphQL
+const GET_SINGLE_USER = gql`
+  query GetSingleUser($email: String) {
+    getSingleUser(email: $email) {
+      email
+      username
+      phone
+      birthDate
+      gender
+    }
+  }
+`;
+
+const UPDATE_SINGLE_USER = gql`
+  mutation UpdateUser(
+    $email: String!
+    $username: String
+    $phone: String
+    $birthDate: String
+    $address: String
+    $gender: String
+  ) {
+    updateUser(
+      email: $email
+      username: $username
+      phone: $phone
+      birthDate: $birthDate
+      address: $address
+      gender: $gender
+    ) {
+      email
+      username
+      phone
+      birthDate
+      address
+      gender
+    }
+  }
+`;
 
 const ProfileContent = () => {
+  const client = useApolloClient();
+
   const { user } = useAuth();
-  const [profileInfo, setProfileInfo] = useState<User | null>(null);
   const [editMode, setEditMode] = useState(false);
-  const [formData, setFormData] = useState({
-    name: user?.displayName || 'John Doe',
-    email: user?.email || '',
-    phone: '99109911',
-    address: 'Bayangol District, Ulaanbaatar',
-    birthDate: '1990-10-31',
-    gender: 'male',
+  // 2) getting user data from MONGODB using Apollo Client
+  const { loading, data } = useQuery(GET_SINGLE_USER, {
+    variables: { email: user?.email },
   });
 
-  const { name, email, phone, address, birthDate, gender } = formData;
+  const originalFormdata = {
+    email: data?.getSingleUser.email,
+    username: data?.getSingleUser.username,
+    phone: data?.getSingleUser.phone,
+    birthDate: data?.getSingleUser.birthDate,
+    gender: data?.getSingleUser.genderr,
+    address: data?.getSingleUser.addressss,
+  };
 
+  const [formData, setFormData] = useState<UserFormType>({
+    email: originalFormdata.email,
+    username: originalFormdata.username,
+    phone: originalFormdata.phone,
+    birthDate: originalFormdata.birthDate,
+    gender: originalFormdata.gender,
+    address: originalFormdata.address,
+  });
+
+  const { username, email, phone, address, birthDate, gender } = formData;
+
+  // 2) getting user data from MONGODB using Apollo Client
+  const [updateUser, { data: updatedUser, error }] = useMutation(
+    UPDATE_SINGLE_USER,
+    {
+      variables: { username, email, phone, birthDate, address, gender },
+    }
+  );
   // Works when click the SAVE button
   const updateProfile = async () => {
-    // const { bio, name, username } = profileInfo as User;
-    // await axios.put('/api/profile', { bio, name, username });
+    updateUser();
     setEditMode(false);
   };
 
   // Works when click the CANCEL button
   const cancelEdit = () => {
-    // const { bio, name, username } = originalUserInfo as User;
-    // setProfileInfo((prev) => ({ ...prev, bio, name, username } as User));
+    setFormData(() => ({ ...(originalFormdata as UserFormType) }));
     setEditMode(false);
   };
 
@@ -38,7 +99,8 @@ const ProfileContent = () => {
     }));
   };
 
-  // console.log(email);
+  console.log(updatedUser);
+
   return (
     <>
       {/* Content1 */}
@@ -70,7 +132,9 @@ const ProfileContent = () => {
           </div>
         </div>
         <div className='flex flex-col ml-36 overflow-hidden'>
-          <h2 className='font-bold text-lg text-gray-500'>John Doe</h2>
+          <h2 className='font-bold text-lg text-gray-500'>
+            {originalFormdata.username}
+          </h2>
           <div className='flex flex-row justify-between items-center'>
             <div>Designer</div>
             <div>
@@ -109,8 +173,8 @@ const ProfileContent = () => {
             <div className='font-semibold'>Name:</div>
             <input
               type='text'
-              id='name'
-              value={name}
+              id='username'
+              value={username}
               disabled={!editMode}
               className={`${
                 editMode && 'bg-purple-100 border border-purple-500'
@@ -123,7 +187,7 @@ const ProfileContent = () => {
             <input
               type='email'
               id='email'
-              value={email}
+              value={email!}
               disabled={!editMode}
               className={`${
                 editMode && 'bg-purple-100 border border-purple-500'

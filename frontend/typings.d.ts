@@ -1,5 +1,8 @@
-interface User {
-  username: string;
+interface UserFormType {
   email: string;
-  image: string;
+  username: string;
+  phone: string;
+  address: string;
+  birthDate: string;
+  gender: string;
 }
