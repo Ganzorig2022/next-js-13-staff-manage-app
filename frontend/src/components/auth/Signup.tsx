@@ -4,6 +4,7 @@ import { ChangeEvent, useState } from 'react';
 import { PulseLoader } from 'react-spinners';
 import { useMutation, gql } from '@apollo/client';
 import { FormEvent } from 'react';
+import { CREATE_NEW_USER } from '@/graphql/mutations/user';
 
 // type def for form inputs
 type FormData = {
@@ -18,33 +19,6 @@ type FormData = {
 type Props = {
   toggleView: (view: LoginView) => void;
 };
-
-const CREATE_NEW_USER = gql`
-  mutation CreateUser(
-    $username: String
-    $email: String
-    $phone: String
-    $birthDate: String
-    $gender: String
-    $password: String
-  ) {
-    createUser(
-      username: $username
-      email: $email
-      phone: $phone
-      birthDate: $birthDate
-      gender: $gender
-      password: $password
-    ) {
-      username
-      email
-      phone
-      birthDate
-      gender
-      password
-    }
-  }
-`;
 
 const SignUp = ({ toggleView }: Props) => {
   const { signUp } = useAuth();

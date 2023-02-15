@@ -1,66 +1,39 @@
 import { useAuth } from '@/hooks/useAuth';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
-import { useQuery, gql, useMutation, useApolloClient } from '@apollo/client';
-
-//1) Defining GraphQL
-const GET_SINGLE_USER = gql`
-  query GetSingleUser($email: String) {
-    getSingleUser(email: $email) {
-      email
-      username
-      phone
-      birthDate
-      gender
-    }
-  }
-`;
-
-const UPDATE_SINGLE_USER = gql`
-  mutation UpdateUser(
-    $email: String!
-    $username: String
-    $phone: String
-    $birthDate: String
-    $address: String
-    $gender: String
-  ) {
-    updateUser(
-      email: $email
-      username: $username
-      phone: $phone
-      birthDate: $birthDate
-      address: $address
-      gender: $gender
-    ) {
-      email
-      username
-      phone
-      birthDate
-      address
-      gender
-    }
-  }
-`;
+import { useQuery, useMutation, useApolloClient } from '@apollo/client';
+import { UPDATE_SINGLE_USER } from '@/graphql/mutations/user';
+import { GET_SINGLE_USER } from '@/graphql/queries/user';
 
 const ProfileContent = () => {
-  const client = useApolloClient();
-
   const { user } = useAuth();
   const [editMode, setEditMode] = useState(false);
   // 2) getting user data from MONGODB using Apollo Client
-  const { loading, data } = useQuery(GET_SINGLE_USER, {
+  const { loading, data, refetch } = useQuery(GET_SINGLE_USER, {
     variables: { email: user?.email },
+    pollInterval: 500,
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-and-network',
   });
+  const client = useApolloClient();
+  // client.readQuery({
+  //   query: GET_SINGLE_USER,
+  // });
 
-  const originalFormdata = {
-    email: data?.getSingleUser.email,
-    username: data?.getSingleUser.username,
-    phone: data?.getSingleUser.phone,
-    birthDate: data?.getSingleUser.birthDate,
-    gender: data?.getSingleUser.genderr,
-    address: data?.getSingleUser.addressss,
-  };
+  // useEffect(() => {
+  //   refetch();
+  // }, []);
+
+  // console.log('first render with latest update>>>>>>', result);
+
+  const [originalFormdata] = useState({
+    email: data?.getSingleUser?.email || 'empty',
+    username: data?.getSingleUser?.username || 'empty',
+    phone: data?.getSingleUser?.phone || 'empty',
+    birthDate: data?.getSingleUser?.birthDate || 'empty',
+    gender: data?.getSingleUser?.gender || 'empty',
+    address: data?.getSingleUser?.address || 'empty',
+  });
 
   const [formData, setFormData] = useState<UserFormType>({
     email: originalFormdata.email,
@@ -78,10 +51,37 @@ const ProfileContent = () => {
     UPDATE_SINGLE_USER,
     {
       variables: { username, email, phone, birthDate, address, gender },
+      refetchQueries: [{ query: GET_SINGLE_USER }, 'GetSingleUser'],
+      // update(cache, { data: { updateUser } }) {
+      //   cache.modify({
+      //     fields: {
+      //       getSingleUser(existing = []) {
+      //         const newRef = cache.writeFragment({
+      //           data: updateUser,
+      //           fragment: gql`
+      //             fragment NewUser on User {
+      //               email
+      //               username
+      //               phone
+      //               birthDate
+      //               gender
+      //             }
+      //           `,
+      //         });
+      //         return [...existing, newRef];
+      //       },
+      //     },
+      //   });
+      // },
+      // onQueryUpdated(observableQuery) {
+      //   // Define any custom logic for determining whether to refetch
+      //   observableQuery.refetch();
+      // },
     }
   );
   // Works when click the SAVE button
   const updateProfile = async () => {
+    refetch({ email: user?.email });
     updateUser();
     setEditMode(false);
   };
@@ -99,7 +99,9 @@ const ProfileContent = () => {
     }));
   };
 
-  console.log(updatedUser);
+  console.log('before updating>>>>>>', data);
+
+  console.log('after updating>>>>>>', updatedUser);
 
   return (
     <>
@@ -187,7 +189,7 @@ const ProfileContent = () => {
             <input
               type='email'
               id='email'
-              value={email!}
+              value={email}
               disabled={!editMode}
               className={`${
                 editMode && 'bg-purple-100 border border-purple-500'

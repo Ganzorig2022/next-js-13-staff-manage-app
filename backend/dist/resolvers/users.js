@@ -33,9 +33,17 @@ export const userResolvers = {
         updateUser: async (_parent, args) => {
             const { email, address, username, phone, birthDate, gender } = args;
             //Prisma.user --> "prisma/schema.prisma" dotor model User bga...
-            const user = await Prisma.user.update({
+            const user = await Prisma.user.upsert({
                 where: { email: args.email },
-                data: {
+                update: {
+                    email,
+                    address,
+                    username,
+                    phone,
+                    birthDate,
+                    gender,
+                },
+                create: {
                     email,
                     address,
                     username,

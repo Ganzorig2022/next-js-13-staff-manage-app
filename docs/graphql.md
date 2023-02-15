@@ -18,3 +18,7 @@ pnpm add @apollo/client graphql
 ```
 
 > https://blog.richardev.com/custom-api-server-with-basic-crud-js-apollo-graphql-mongodb
+
+### Re-fetching after mutation
+
+> https://www.apollographql.com/blog/apollo-client/caching/when-to-use-refetch-queries/

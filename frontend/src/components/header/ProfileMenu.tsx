@@ -6,13 +6,12 @@ import MenuItem from '@mui/material/MenuItem';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
-import PersonAdd from '@mui/icons-material/PersonAdd';
 import Settings from '@mui/icons-material/Settings';
 import Logout from '@mui/icons-material/Logout';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { useAuth } from '@/hooks/useAuth';
+import { useApolloClient } from '@apollo/client';
 
 export default function ProfileMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -21,6 +20,7 @@ export default function ProfileMenu() {
     setAnchorEl(event.currentTarget);
   };
   const { logout } = useAuth();
+  const client = useApolloClient();
 
   const handleClose = () => {
     setAnchorEl(null);
@@ -29,18 +29,8 @@ export default function ProfileMenu() {
   return (
     <>
       <Box sx={{ display: 'flex', alignItems: 'center', textAlign: 'center' }}>
-        {/* <Typography sx={{ minWidth: 100 }}>Contact</Typography>
-        <Typography sx={{ minWidth: 100 }}>Profile</Typography> */}
-
         <Tooltip title='Account settings'>
-          <IconButton
-            onClick={handleClick}
-            // size='small'
-            // sx={{ ml: 2 }}
-            // aria-controls={open ? 'account-menu' : undefined}
-            // aria-haspopup='true'
-            // aria-expanded={open ? 'true' : undefined}
-          >
+          <IconButton onClick={handleClick}>
             <AccountCircleIcon sx={{ color: 'white' }} fontSize='large' />
           </IconButton>
         </Tooltip>
@@ -93,7 +83,12 @@ export default function ProfileMenu() {
           </ListItemIcon>
           Settings
         </MenuItem>
-        <MenuItem onClick={logout}>
+        <MenuItem
+          onClick={async () => {
+            logout();
+            client.resetStore();
+          }}
+        >
           <ListItemIcon>
             <Logout fontSize='small' />
           </ListItemIcon>
