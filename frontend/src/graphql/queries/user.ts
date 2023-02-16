@@ -7,6 +7,7 @@ export const GET_SINGLE_USER = gql`
       username
       phone
       birthDate
+      address
       gender
     }
   }

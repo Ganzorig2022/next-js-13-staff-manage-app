@@ -53,3 +53,11 @@ export const CREATE_NEW_USER = gql`
     }
   }
 `;
+
+export const DELETE_USER = gql`
+  mutation DeleteUser($email: String!) {
+    deleteUser(email: $email) {
+      success
+    }
+  }
+`;

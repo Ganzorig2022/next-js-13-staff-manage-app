@@ -2,8 +2,9 @@ import { useAuth } from '@/hooks/useAuth';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useApolloClient } from '@apollo/client';
-import { UPDATE_SINGLE_USER } from '@/graphql/mutations/user';
+import { DELETE_USER, UPDATE_SINGLE_USER } from '@/graphql/mutations/user';
 import { GET_SINGLE_USER } from '@/graphql/queries/user';
+import { deleteUser as deleteFirebaseUser } from 'firebase/auth';
 
 const ProfileContent = () => {
   const { user } = useAuth();
@@ -16,17 +17,8 @@ const ProfileContent = () => {
     nextFetchPolicy: 'cache-and-network',
   });
   const client = useApolloClient();
-  // client.readQuery({
-  //   query: GET_SINGLE_USER,
-  // });
 
-  // useEffect(() => {
-  //   refetch();
-  // }, []);
-
-  // console.log('first render with latest update>>>>>>', result);
-
-  const [originalFormdata] = useState({
+  const [originalFormdata, setOriginalFormData] = useState({
     email: data?.getSingleUser?.email || 'empty',
     username: data?.getSingleUser?.username || 'empty',
     phone: data?.getSingleUser?.phone || 'empty',
@@ -34,6 +26,20 @@ const ProfileContent = () => {
     gender: data?.getSingleUser?.gender || 'empty',
     address: data?.getSingleUser?.address || 'empty',
   });
+
+  useEffect(() => {
+    if (user) {
+      setFormData((prev) => ({
+        ...prev,
+        email: data?.getSingleUser?.email,
+        username: data?.getSingleUser?.username,
+        phone: data?.getSingleUser?.phone,
+        birthDate: data?.getSingleUser?.birthDate,
+        gender: data?.getSingleUser?.gender,
+        address: data?.getSingleUser?.address,
+      }));
+    }
+  }, [user, data]);
 
   const [formData, setFormData] = useState<UserFormType>({
     email: originalFormdata.email,
@@ -46,43 +52,22 @@ const ProfileContent = () => {
 
   const { username, email, phone, address, birthDate, gender } = formData;
 
-  // 2) getting user data from MONGODB using Apollo Client
+  // 2) updating user data to MONGODB using Apollo Client
   const [updateUser, { data: updatedUser, error }] = useMutation(
     UPDATE_SINGLE_USER,
     {
       variables: { username, email, phone, birthDate, address, gender },
       refetchQueries: [{ query: GET_SINGLE_USER }, 'GetSingleUser'],
-      // update(cache, { data: { updateUser } }) {
-      //   cache.modify({
-      //     fields: {
-      //       getSingleUser(existing = []) {
-      //         const newRef = cache.writeFragment({
-      //           data: updateUser,
-      //           fragment: gql`
-      //             fragment NewUser on User {
-      //               email
-      //               username
-      //               phone
-      //               birthDate
-      //               gender
-      //             }
-      //           `,
-      //         });
-      //         return [...existing, newRef];
-      //       },
-      //     },
-      //   });
-      // },
-      // onQueryUpdated(observableQuery) {
-      //   // Define any custom logic for determining whether to refetch
-      //   observableQuery.refetch();
-      // },
     }
   );
+  const [deleteUser, { data: deletedUser }] = useMutation(DELETE_USER, {
+    variables: { email },
+    // refetchQueries: [{ query: GET_SINGLE_USER }, 'GetSingleUser'],
+  });
   // Works when click the SAVE button
   const updateProfile = async () => {
-    refetch({ email: user?.email });
     updateUser();
+    refetch({ email: user?.email });
     setEditMode(false);
   };
 
@@ -99,9 +84,14 @@ const ProfileContent = () => {
     }));
   };
 
-  console.log('before updating>>>>>>', data);
+  const deleteProfile = () => {
+    deleteUser();
+    deleteFirebaseUser(user as any);
+  };
 
-  console.log('after updating>>>>>>', updatedUser);
+  // console.log('user deleted>>>>>>', deletedUser);
+
+  // console.log('after updating>>>>>>', updatedUser);
 
   return (
     <>
@@ -224,7 +214,7 @@ const ProfileContent = () => {
             />
           </div>
           <div className='flex flex-row space-x-2 items-center'>
-            <div className='font-semibold'>Birth date:</div>
+            <div className='font-semibold w-[100px]'>Birth date:</div>
             <input
               type='text'
               id='birthDate'
@@ -248,6 +238,14 @@ const ProfileContent = () => {
               } editInput`}
               onChange={onChange}
             />
+          </div>
+          <div className='text-right'>
+            <button
+              className='bg-red-700 text-white py-1 px-5 rounded-full ml-2 w-fit'
+              onClick={deleteProfile}
+            >
+              Delete Account
+            </button>
           </div>
         </div>
       </div>

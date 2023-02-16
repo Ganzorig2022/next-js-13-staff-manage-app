@@ -73,6 +73,16 @@ export const userResolvers = {
       // will receive from the side of frontend
       return user;
     },
+    deleteUser: async (_parent: any, args: userEmailInput) => {
+      try {
+        await Prisma.user.delete({
+          where: {
+            email: args.email,
+          },
+        });
+        return { success: true };
+      } catch (error) {}
+    },
   },
 };
 

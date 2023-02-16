@@ -14,6 +14,7 @@ type FormData = {
   phone: string;
   birthDate: string;
   gender: string;
+  address: string;
 };
 
 type Props = {
@@ -26,21 +27,23 @@ const SignUp = ({ toggleView }: Props) => {
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
-    password: '',
     username: '',
     phone: '',
+    password: '',
+    address: '',
     birthDate: '',
     gender: '',
   });
 
-  const { email, password, username, phone, birthDate, gender } = formData;
+  const { email, password, username, phone, birthDate, address, gender } =
+    formData;
 
   //Apollo Client request for Apollo Server/Prisma/MongoDB
   const [createNewUser, { data, error }] = useMutation(CREATE_NEW_USER, {
     variables: {
-      password,
-      username,
       email,
+      username,
+      address,
       phone,
       birthDate,
       gender,
@@ -153,6 +156,23 @@ const SignUp = ({ toggleView }: Props) => {
                 placeholder='Birth date'
                 className='customInput'
                 name='birthDate'
+                onChange={onChangeHandler}
+                // className={`customInput ${
+                //   errors.password && 'border-b-2 border-red-500'
+                // }`}
+              />
+              {/* {errors.password && (
+                <p className='p-1 text-[13px] font-light  text-red-500'>
+                  Your password must contain between 4 and 60 characters.
+                </p>
+              )} */}
+            </label>
+            <label className='inline-block w-full'>
+              <input
+                type='text'
+                placeholder='Address'
+                className='customInput'
+                name='address'
                 onChange={onChangeHandler}
                 // className={`customInput ${
                 //   errors.password && 'border-b-2 border-red-500'

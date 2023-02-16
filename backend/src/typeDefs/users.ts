@@ -11,6 +11,10 @@ const typeDefs = gql`
     gender: String
   }
 
+  type IsSuccess {
+    success: Boolean
+  }
+
   type Query {
     getSingleUser(email: String): User
   }
@@ -40,6 +44,9 @@ const typeDefs = gql`
       address: String
       gender: String
     ): User
+  }
+  type Mutation {
+    deleteUser(email: String!): IsSuccess
   }
 `;
 

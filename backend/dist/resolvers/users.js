@@ -55,6 +55,17 @@ export const userResolvers = {
             // will receive from the side of frontend
             return user;
         },
+        deleteUser: async (_parent, args) => {
+            try {
+                await Prisma.user.delete({
+                    where: {
+                        email: args.email,
+                    },
+                });
+                return { success: true };
+            }
+            catch (error) { }
+        },
     },
 };
 // https://www.prisma.io/docs/concepts/components/prisma-client/crud#read
