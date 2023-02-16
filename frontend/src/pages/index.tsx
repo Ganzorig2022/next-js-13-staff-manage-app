@@ -1,15 +1,32 @@
-// 'use client';
-
 import Head from 'next/head';
 import Header from '../components/header/Header';
 import { useAuth } from '@/hooks/useAuth';
 import Sidebar from '@/components/Sidebar';
-import MainContent from '@/components/MainContent';
+import HomeContent from '@/components/HomeContent';
+import { useRecoilValue, useSetRecoilState } from 'recoil';
+import { adminState } from '@/recoil/adminAtom';
+import { useQuery } from '@apollo/client';
+import { GET_SINGLE_USER } from '@/graphql/queries/user';
+import { drawerState } from '@/recoil/drawerOpen';
+import { Toaster } from 'react-hot-toast';
 
 export default function Home() {
-  const { loading } = useAuth();
+  const { loading, user } = useAuth();
+  const { data } = useQuery(GET_SINGLE_USER, {
+    variables: { email: user?.email },
+    pollInterval: 500,
+    fetchPolicy: 'cache-and-network',
+    nextFetchPolicy: 'cache-and-network',
+  });
+  const setIsAdmin = useSetRecoilState(adminState);
+  const openSideBar = useRecoilValue(drawerState);
 
   if (loading) return null;
+
+  if (data?.getSingleUser?.role === 'admin') {
+    setIsAdmin(true);
+  }
+  if (!user) setIsAdmin(false);
 
   return (
     <>
@@ -20,10 +37,11 @@ export default function Home() {
         <link rel='icon' href='/favicon.ico' />
       </Head>
       <main className='flex flex-row'>
-        <Sidebar />
+        <Toaster />
+        {openSideBar && <Sidebar />}
         <div className='flex flex-col w-full'>
           <Header />
-          <MainContent />
+          <HomeContent />
         </div>
       </main>
     </>

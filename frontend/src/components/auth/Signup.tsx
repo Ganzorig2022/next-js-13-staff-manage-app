@@ -10,11 +10,7 @@ import { CREATE_NEW_USER } from '@/graphql/mutations/user';
 type FormData = {
   email: string;
   password: string;
-  username: string;
-  phone: string;
-  birthDate: string;
-  gender: string;
-  address: string;
+  role: string;
 };
 
 type Props = {
@@ -27,26 +23,17 @@ const SignUp = ({ toggleView }: Props) => {
 
   const [formData, setFormData] = useState<FormData>({
     email: '',
-    username: '',
-    phone: '',
     password: '',
-    address: '',
-    birthDate: '',
-    gender: '',
+    role: '',
   });
 
-  const { email, password, username, phone, birthDate, address, gender } =
-    formData;
+  const { email, password, role } = formData;
 
   //Apollo Client request for Apollo Server/Prisma/MongoDB
   const [createNewUser, { data, error }] = useMutation(CREATE_NEW_USER, {
     variables: {
       email,
-      username,
-      address,
-      phone,
-      birthDate,
-      gender,
+      role,
     },
   });
 
@@ -63,8 +50,6 @@ const SignUp = ({ toggleView }: Props) => {
     createNewUser();
 
     setLoading(false);
-    console.log('GANZO', error);
-    console.log(data);
   };
 
   const onChangeHandler = (e: ChangeEvent<HTMLInputElement>) => {
@@ -74,9 +59,18 @@ const SignUp = ({ toggleView }: Props) => {
     }));
   };
 
+  const onSelectHandler = (e: ChangeEvent<HTMLSelectElement>) => {
+    setFormData((prev) => ({
+      ...prev,
+      role: e.target.value,
+    }));
+  };
+
+  console.log(formData.role);
+
   return (
     <>
-      <div className='mt-24 rounded bg-white py-10 px-6 md:mt-0 md:max-w-md md:px-14'>
+      <div className='mt-24 rounded bg-white py-10 px-6 md:mt-0 md:max-w-md sm:max-w-sm md:px-14'>
         <form onSubmit={onSubmit} className='space-y-8 rounded'>
           <h1 className='text-4xl font-semibold text-black text-center'>
             Sign Up
@@ -89,15 +83,7 @@ const SignUp = ({ toggleView }: Props) => {
                 className='customInput'
                 name='email'
                 onChange={onChangeHandler}
-                // className={`customInput ${
-                //   errors.email && 'border-b-2 border-red-500'
-                // }`}
               />
-              {/* {errors.email && (
-                <p className='p-1 text-[13px] font-light  text-red-500'>
-                  Please enter a valid email.
-                </p>
-              )} */}
             </label>
             <label className='inline-block w-full'>
               <input
@@ -117,89 +103,15 @@ const SignUp = ({ toggleView }: Props) => {
               )} */}
             </label>
             <label className='inline-block w-full'>
-              <input
-                type='text'
-                placeholder='Username'
+              <select
+                name='Role'
+                id='role'
+                onChange={onSelectHandler}
                 className='customInput'
-                name='username'
-                onChange={onChangeHandler}
-                // className={`customInput ${
-                //   errors.password && 'border-b-2 border-red-500'
-                // }`}
-              />
-              {/* {errors.password && (
-                <p className='p-1 text-[13px] font-light  text-red-500'>
-                  Your password must contain between 4 and 60 characters.
-                </p>
-              )} */}
-            </label>
-            <label className='inline-block w-full'>
-              <input
-                type='text'
-                placeholder='Phone'
-                className='customInput'
-                name='phone'
-                onChange={onChangeHandler}
-                // className={`customInput ${
-                //   errors.password && 'border-b-2 border-red-500'
-                // }`}
-              />
-              {/* {errors.password && (
-                <p className='p-1 text-[13px] font-light  text-red-500'>
-                  Your password must contain between 4 and 60 characters.
-                </p>
-              )} */}
-            </label>
-            <label className='inline-block w-full'>
-              <input
-                type='text'
-                placeholder='Birth date'
-                className='customInput'
-                name='birthDate'
-                onChange={onChangeHandler}
-                // className={`customInput ${
-                //   errors.password && 'border-b-2 border-red-500'
-                // }`}
-              />
-              {/* {errors.password && (
-                <p className='p-1 text-[13px] font-light  text-red-500'>
-                  Your password must contain between 4 and 60 characters.
-                </p>
-              )} */}
-            </label>
-            <label className='inline-block w-full'>
-              <input
-                type='text'
-                placeholder='Address'
-                className='customInput'
-                name='address'
-                onChange={onChangeHandler}
-                // className={`customInput ${
-                //   errors.password && 'border-b-2 border-red-500'
-                // }`}
-              />
-              {/* {errors.password && (
-                <p className='p-1 text-[13px] font-light  text-red-500'>
-                  Your password must contain between 4 and 60 characters.
-                </p>
-              )} */}
-            </label>
-            <label className='inline-block w-full'>
-              <input
-                type='text'
-                placeholder='Gender'
-                className='customInput'
-                name='gender'
-                onChange={onChangeHandler}
-                // className={`customInput ${
-                //   errors.password && 'border-b-2 border-red-500'
-                // }`}
-              />
-              {/* {errors.password && (
-                <p className='p-1 text-[13px] font-light  text-red-500'>
-                  Your password must contain between 4 and 60 characters.
-                </p>
-              )} */}
+              >
+                <option value='admin'>Admin</option>
+                <option value='user'>User</option>
+              </select>
             </label>
           </div>
           {loading ? (

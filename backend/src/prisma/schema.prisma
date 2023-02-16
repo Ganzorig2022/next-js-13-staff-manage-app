@@ -18,4 +18,5 @@ model User {
   address  String?
   birthDate String?
   gender    String?
+  role    String?
 }

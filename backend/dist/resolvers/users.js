@@ -25,13 +25,14 @@ export const userResolvers = {
                     address: args.address,
                     birthDate: args.birthDate,
                     gender: args.gender,
+                    role: args.role,
                 },
             });
             // will receive request from the frontend side
             return user;
         },
         updateUser: async (_parent, args) => {
-            const { email, address, username, phone, birthDate, gender } = args;
+            const { email, address, username, phone, birthDate, gender, role } = args;
             //Prisma.user --> "prisma/schema.prisma" dotor model User bga...
             const user = await Prisma.user.upsert({
                 where: { email: args.email },
@@ -42,6 +43,7 @@ export const userResolvers = {
                     phone,
                     birthDate,
                     gender,
+                    role,
                 },
                 create: {
                     email,
@@ -50,6 +52,7 @@ export const userResolvers = {
                     phone,
                     birthDate,
                     gender,
+                    role,
                 },
             });
             // will receive from the side of frontend
@@ -60,6 +63,17 @@ export const userResolvers = {
                 await Prisma.user.delete({
                     where: {
                         email: args.email,
+                    },
+                });
+                return { success: true };
+            }
+            catch (error) { }
+        },
+        deleteUserById: async (_parent, args) => {
+            try {
+                await Prisma.user.delete({
+                    where: {
+                        id: args.id,
                     },
                 });
                 return { success: true };

@@ -1,4 +1,7 @@
 import { auth } from '@/firebase/firebase';
+import { GET_SINGLE_USER } from '@/graphql/queries/user';
+import { adminState } from '@/recoil/adminAtom';
+import { useQuery } from '@apollo/client';
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
@@ -15,6 +18,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import { useRecoilState } from 'recoil';
 
 //Creating Auth Context
 interface AuthType {
@@ -52,7 +56,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       onAuthStateChanged(auth, (user) => {
         if (user) {
           // Logged in...
+
           setUser(user);
+
           setLoading(false);
         } else {
           // Not logged in...

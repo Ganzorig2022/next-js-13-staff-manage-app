@@ -1,14 +1,19 @@
-import { useAuth } from '@/hooks/useAuth';
-import Image from 'next/image';
-import React, { useEffect, useState } from 'react';
-import { useQuery, useMutation, useApolloClient } from '@apollo/client';
 import { DELETE_USER, UPDATE_SINGLE_USER } from '@/graphql/mutations/user';
 import { GET_SINGLE_USER } from '@/graphql/queries/user';
+import { useAuth } from '@/hooks/useAuth';
+import { adminState } from '@/recoil/adminAtom';
+import { useMutation, useQuery } from '@apollo/client';
 import { deleteUser as deleteFirebaseUser } from 'firebase/auth';
+import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
+import { toast, Toaster } from 'react-hot-toast';
+import { useRecoilValue } from 'recoil';
 
 const ProfileContent = () => {
   const { user } = useAuth();
   const [editMode, setEditMode] = useState(false);
+  const isAdmin = useRecoilValue(adminState);
+
   // 2) getting user data from MONGODB using Apollo Client
   const { loading, data, refetch } = useQuery(GET_SINGLE_USER, {
     variables: { email: user?.email },
@@ -16,9 +21,8 @@ const ProfileContent = () => {
     fetchPolicy: 'cache-and-network',
     nextFetchPolicy: 'cache-and-network',
   });
-  const client = useApolloClient();
 
-  const [originalFormdata, setOriginalFormData] = useState({
+  const [originalFormdata] = useState({
     email: data?.getSingleUser?.email || 'empty',
     username: data?.getSingleUser?.username || 'empty',
     phone: data?.getSingleUser?.phone || 'empty',
@@ -41,7 +45,7 @@ const ProfileContent = () => {
     }
   }, [user, data]);
 
-  const [formData, setFormData] = useState<UserFormType>({
+  const [formData, setFormData] = useState<ProfileFormType>({
     email: originalFormdata.email,
     username: originalFormdata.username,
     phone: originalFormdata.phone,
@@ -66,6 +70,7 @@ const ProfileContent = () => {
   });
   // Works when click the SAVE button
   const updateProfile = async () => {
+    toast.success('You have successfully updated your profile');
     updateUser();
     refetch({ email: user?.email });
     setEditMode(false);
@@ -85,6 +90,11 @@ const ProfileContent = () => {
   };
 
   const deleteProfile = () => {
+    if (!isAdmin) {
+      toast.error('You have no permission. Only admin can delete.');
+      return;
+    }
+    toast.error('You have deleted your account');
     deleteUser();
     deleteFirebaseUser(user as any);
   };
@@ -92,12 +102,14 @@ const ProfileContent = () => {
   // console.log('user deleted>>>>>>', deletedUser);
 
   // console.log('after updating>>>>>>', updatedUser);
+  // console.log('data received>>>>>>', data);
 
   return (
-    <>
+    <div className='flex flex-col items-center justify-center'>
       {/* Content1 */}
-      <div className='w-[800px] shadow p-5 bg-white rounded mt-5 border-gray-100'>
-        <div className='relaitve'>
+      <div className='w-[800px] md:w-[600px] shadow p-5 bg-white rounded mt-5 border-gray-100'>
+        <div className='relaitve  mx-auto'>
+          <Toaster />
           {/* BACKGROUND */}
           <div className='relative h-[150px]'>
             <Image
@@ -135,7 +147,9 @@ const ProfileContent = () => {
                   className='bg-purple-800 text-white py-1 px-5 rounded-full'
                   onClick={() => setEditMode(true)}
                 >
-                  Edit Profile
+                  {`${
+                    !data?.getSingleUser ? 'Create a profile' : 'Edit Profile'
+                  } `}
                 </button>
               )}
               {editMode && (
@@ -159,7 +173,7 @@ const ProfileContent = () => {
         </div>
       </div>
       {/*=========== Content2 */}
-      <div className='w-[800px] shadow-md p-5 bg-white rounded mt-10 border border-gray-200'>
+      <div className='w-[800px] md:w-[600px] shadow-md p-5 bg-white rounded mt-10 border border-gray-200'>
         <div className='flex flex-col space-y-2'>
           <div className='flex flex-row space-x-2 items-center'>
             <div className='font-semibold'>Name:</div>
@@ -249,7 +263,7 @@ const ProfileContent = () => {
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

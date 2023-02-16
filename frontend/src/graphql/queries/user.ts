@@ -9,6 +9,22 @@ export const GET_SINGLE_USER = gql`
       birthDate
       address
       gender
+      role
+    }
+  }
+`;
+
+export const GET_ALL_USERS = gql`
+  query GetAllUsers {
+    getAllUsers {
+      id
+      email
+      username
+      phone
+      birthDate
+      address
+      gender
+      role
     }
   }
 `;

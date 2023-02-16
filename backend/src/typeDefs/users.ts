@@ -9,6 +9,7 @@ const typeDefs = gql`
     birthDate: String
     address: String
     gender: String
+    role: String
   }
 
   type IsSuccess {
@@ -32,6 +33,7 @@ const typeDefs = gql`
       birthDate: String
       address: String
       gender: String
+      role: String
     ): User
   }
 
@@ -43,10 +45,14 @@ const typeDefs = gql`
       birthDate: String
       address: String
       gender: String
+      role: String
     ): User
   }
   type Mutation {
     deleteUser(email: String!): IsSuccess
+  }
+  type Mutation {
+    deleteUserById(id: String!): IsSuccess
   }
 `;
 

@@ -22,3 +22,7 @@ pnpm add @apollo/client graphql
 ### Re-fetching after mutation
 
 > https://www.apollographql.com/blog/apollo-client/caching/when-to-use-refetch-queries/
+
+### CRUD Operations using PRISMA
+
+> https://www.prisma.io/docs/concepts/components/prisma-client/crud#update

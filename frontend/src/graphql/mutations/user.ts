@@ -8,6 +8,7 @@ export const UPDATE_SINGLE_USER = gql`
     $birthDate: String
     $address: String
     $gender: String
+    $role: String
   ) {
     updateUser(
       email: $email
@@ -16,6 +17,7 @@ export const UPDATE_SINGLE_USER = gql`
       birthDate: $birthDate
       address: $address
       gender: $gender
+      role: $role
     ) {
       email
       username
@@ -35,6 +37,7 @@ export const CREATE_NEW_USER = gql`
     $birthDate: String
     $gender: String
     $address: String
+    $role: String
   ) {
     createUser(
       username: $username
@@ -43,6 +46,7 @@ export const CREATE_NEW_USER = gql`
       birthDate: $birthDate
       gender: $gender
       address: $address
+      role: $role
     ) {
       username
       email
@@ -50,6 +54,7 @@ export const CREATE_NEW_USER = gql`
       birthDate
       gender
       address
+      role
     }
   }
 `;
@@ -57,6 +62,13 @@ export const CREATE_NEW_USER = gql`
 export const DELETE_USER = gql`
   mutation DeleteUser($email: String!) {
     deleteUser(email: $email) {
+      success
+    }
+  }
+`;
+export const DELETE_USER_BY_ID = gql`
+  mutation DeleteUserById($id: String!) {
+    deleteUserById(id: $id) {
       success
     }
   }

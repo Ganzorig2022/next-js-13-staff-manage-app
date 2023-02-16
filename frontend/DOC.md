@@ -11,7 +11,7 @@ add/edit
 Админ болон ажилтны мэдээлэл edit хийдэг байх
 Технологийн шаардлага:
 
-#### Web Fronend - NextJs
+#### Web Frontend - NextJs
 
 Backend - Graphql, apollo server
 Git repository үүсгэн хадгалах.

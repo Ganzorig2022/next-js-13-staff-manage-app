@@ -1,7 +1,12 @@
 import React from 'react';
+import StaffLists from './StaffLists';
 
 const StaffListsContent = () => {
-  return <div>StaffListsContent</div>;
+  return (
+    <>
+      <StaffLists />
+    </>
+  );
 };
 
 export default StaffListsContent;
